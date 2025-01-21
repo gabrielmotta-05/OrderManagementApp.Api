@@ -168,11 +168,34 @@ namespace OrderManagementApp.Api.Controllers
         [HttpGet("filter")]
         public async Task<IActionResult> FilterOrders([FromQuery] string? NomeCliente, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
         {
-            var command = new FilterOrdersCommand(NomeCliente, startDate, endDate);
-            var filteredOrders = await _mediator.Send(command);
+            // Filtra as ordens com base nos parâmetros recebidos
+            var orders = Orders.AsQueryable();
 
-            return Ok(filteredOrders);
+            if (!string.IsNullOrEmpty(NomeCliente))
+            {
+                orders = orders.Where(o => o.NomeCliente.Contains(NomeCliente));
+            }
+
+            if (startDate.HasValue)
+            {
+                orders = orders.Where(o => o.DataOrdem >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                orders = orders.Where(o => o.DataOrdem <= endDate.Value);
+            }
+
+            var order = orders.FirstOrDefault();
+
+            if (order == null)
+            {
+                return NotFound("Pedido não encontrado.");
+            }
+
+            return Ok(order);
         }
+
 
     }
 }
