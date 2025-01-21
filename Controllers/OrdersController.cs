@@ -19,39 +19,17 @@ namespace OrderManagementApp.Api.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly OrdersService _ordersService;
 
         /// <summary>
         /// Construtor da controller de pedidos.
         /// </summary>
         /// <param name="mediator">Instância do MediatR</param>
-        public OrdersController(IMediator mediator)
+        public OrdersController(IMediator mediator, OrdersService ordersService)
         {
             _mediator = mediator;
+            _ordersService = ordersService;
         }
-
-        private static List<Order> Orders = new List<Order>
-        {
-            new Order
-            {
-                NomeCliente = "Gabriel Motta",
-                DataOrdem = DateTime.UtcNow,
-                Items = new List<OrderItem>
-                {
-                    new OrderItem { NomeItem = "Laptop", Quantidade = 1, PrecoUnitario = 1200.50M },
-                    new OrderItem { NomeItem = "Mouse", Quantidade = 2, PrecoUnitario = 25.00M }
-                }
-            },
-            new Order
-            {
-                NomeCliente = "Aline Carvalho",
-                DataOrdem = DateTime.UtcNow.AddDays(-1),
-                Items = new List<OrderItem>
-                {
-                    new OrderItem { NomeItem = "Keyboard", Quantidade = 1, PrecoUnitario = 100.00M },
-                    new OrderItem { NomeItem = "Monitor", Quantidade = 2, PrecoUnitario = 300.00M }
-                }
-            }
-        };
 
         /// <summary>
         /// Obtém todos os pedidos.
@@ -60,7 +38,7 @@ namespace OrderManagementApp.Api.Controllers
         [HttpGet]
         public IActionResult GetOrders()
         {
-            return Ok(Orders);
+            return Ok(_ordersService.Orders);
         }
 
         /// <summary>
@@ -94,7 +72,7 @@ namespace OrderManagementApp.Api.Controllers
             createdOrder.Id = Guid.NewGuid();
             createdOrder.DataOrdem = DateTime.UtcNow;
 
-            Orders.Add(createdOrder);
+            _ordersService.Orders.Add(createdOrder);
 
             return CreatedAtAction(nameof(GetOrderById), new { id = createdOrder.Id }, createdOrder);
         }
@@ -107,7 +85,7 @@ namespace OrderManagementApp.Api.Controllers
         [HttpGet("{id}")]
         public IActionResult GetOrderById(Guid id)
         {
-            var order = Orders.FirstOrDefault(o => o.Id == id);
+            var order = _ordersService.Orders.FirstOrDefault(o => o.Id == id);
 
             if (order == null)
             {
@@ -131,6 +109,10 @@ namespace OrderManagementApp.Api.Controllers
             try
             {
                 var updatedOrder = await _mediator.Send(command);
+                if (updatedOrder == null)
+                {
+                    return NotFound("Pedido não encontrado.");
+                }
                 return Ok(updatedOrder);
             }
             catch (ArgumentException ex)
@@ -156,8 +138,6 @@ namespace OrderManagementApp.Api.Controllers
             return NoContent();
         }
 
-
-
         /// <summary>
         /// Filtra pedidos com base nos parâmetros fornecidos.
         /// </summary>
@@ -169,31 +149,12 @@ namespace OrderManagementApp.Api.Controllers
         public async Task<IActionResult> FilterOrders([FromQuery] string? NomeCliente, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
         {
             // Filtra as ordens com base nos parâmetros recebidos
-            var orders = Orders.AsQueryable();
+            var command = new FilterOrdersCommand(NomeCliente, startDate, endDate);
 
-            if (!string.IsNullOrEmpty(NomeCliente))
-            {
-                orders = orders.Where(o => o.NomeCliente.Contains(NomeCliente));
-            }
+            // Envia o comando para o Mediator
+            var filter = await _mediator.Send(command);
 
-            if (startDate.HasValue)
-            {
-                orders = orders.Where(o => o.DataOrdem >= startDate.Value);
-            }
-
-            if (endDate.HasValue)
-            {
-                orders = orders.Where(o => o.DataOrdem <= endDate.Value);
-            }
-
-            var order = orders.FirstOrDefault();
-
-            if (order == null)
-            {
-                return NotFound("Pedido não encontrado.");
-            }
-
-            return Ok(order);
+            return Ok(filter);
         }
 
 

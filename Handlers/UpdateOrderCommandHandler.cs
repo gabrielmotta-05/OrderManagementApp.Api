@@ -10,11 +10,16 @@ namespace OrderManagementApp.Api.Handlers
 {
     public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommand, Order>
     {
-        private static List<Order> Orders = new List<Order>(); // Lista de simulação.
+        private readonly OrdersService _ordersService;
+
+        public UpdateOrderCommandHandler(OrdersService ordersService)
+        {
+            _ordersService = ordersService;
+        }
 
         public async Task<Order> Handle(UpdateOrderCommand request, CancellationToken cancellationToken)
         {
-            var existingOrder = Orders.FirstOrDefault(o => o.Id == request.Id);
+            var existingOrder = _ordersService.Orders.FirstOrDefault(o => o.Id == request.Id);
             if (existingOrder == null)
             {
                 throw new ArgumentException("Pedido não encontrado.");

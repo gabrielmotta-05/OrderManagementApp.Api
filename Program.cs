@@ -10,6 +10,7 @@ builder.Services.AddControllers();
 
 // Configura MediatR - adicionando todos os handlers do seu assembly
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+builder.Services.AddSingleton<OrdersService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

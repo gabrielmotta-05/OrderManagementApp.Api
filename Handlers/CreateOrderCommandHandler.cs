@@ -7,7 +7,12 @@ using OrderManagementApp.Api.Commands;
 
 public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Order>
 {
-    private static List<Order> Orders = new List<Order>(); // Usando uma lista estática para simulação do banco de dados.
+    private readonly OrdersService _ordersService;
+
+    public CreateOrderCommandHandler(OrdersService ordersService)
+    {
+        _ordersService = ordersService;
+    }
 
     public async Task<Order> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
     {
@@ -27,7 +32,7 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Ord
         };
 
         // Adiciona o pedido à lista.
-        Orders.Add(newOrder);
+        _ordersService.Orders.Add(newOrder);
 
         // Retorna o pedido criado.
         return newOrder;

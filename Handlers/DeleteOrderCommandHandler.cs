@@ -10,18 +10,23 @@ namespace OrderManagementApp.Api.Handlers
 {
     public class DeleteOrderCommandHandler : IRequestHandler<DeleteOrderCommand, Unit>
     {
-        private static List<Order> Orders = new List<Order>();
+        private readonly OrdersService _ordersService;
+
+        public DeleteOrderCommandHandler(OrdersService ordersService)
+        {
+            _ordersService = ordersService;
+        }
 
         public async Task<Unit> Handle(DeleteOrderCommand request, CancellationToken cancellationToken)
         {
-            var order = Orders.FirstOrDefault(o => o.Id == request.Id);
+            var order = _ordersService.Orders.FirstOrDefault(o => o.Id == request.Id);
             if (order == null)
             {
                 // Retorna Unit.Value, indicando que não há dados de retorno, mas a operação não foi bem-sucedida
                 throw new KeyNotFoundException("Pedido não encontrado.");
             }
 
-            Orders.Remove(order);
+            _ordersService.Orders.Remove(order);
 
             return Unit.Value; // Pedido deletado com sucesso
         }

@@ -11,11 +11,16 @@ namespace OrderManagementApp.Api.Handlers
 {
     public class FilterOrdersCommandHandler : IRequestHandler<FilterOrdersCommand, List<Order>>
     {
-        private static List<Order> Orders = new List<Order>();
+        private readonly OrdersService _ordersService;
+
+        public FilterOrdersCommandHandler(OrdersService ordersService)
+        {
+            _ordersService = ordersService;
+        }
 
         public async Task<List<Order>> Handle(FilterOrdersCommand request, CancellationToken cancellationToken)
         {
-            var filteredOrders = Orders.AsQueryable();
+            var filteredOrders = _ordersService.Orders.AsQueryable();
 
             if (!string.IsNullOrEmpty(request.NomeCliente))
             {
