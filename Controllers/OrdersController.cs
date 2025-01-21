@@ -1,12 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using OrderManagementApp.Api.Models;
 using MediatR;
 using OrderManagementApp.Api.Commands;
 using OrderManagementApp.Api.Queries;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace OrderManagementApp.Api.Controllers
 {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace OrderManagementApp.Api.Models
+﻿namespace OrderManagementApp.Api.Models
 {
     public class Order
     {

@@ -1,11 +1,6 @@
 ﻿using MediatR;
 using OrderManagementApp.Api.Models;
 using OrderManagementApp.Api.Queries;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OrderManagementApp.Api.Handlers
 {

@@ -1,7 +1,5 @@
 ﻿using MediatR;
 using OrderManagementApp.Api.Models;
-using System;
-using System.Collections.Generic;
 
 namespace OrderManagementApp.Api.Queries
 {
