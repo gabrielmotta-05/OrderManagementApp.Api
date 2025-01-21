@@ -156,7 +156,5 @@ namespace OrderManagementApp.Api.Controllers
 
             return Ok(filter);
         }
-
-
     }
 }
